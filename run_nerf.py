@@ -17,6 +17,7 @@ from load_llff import load_llff_data
 from load_deepvoxels import load_dv_data
 from load_blender import load_blender_data
 from load_LINEMOD import load_LINEMOD_data
+from load_human import load_human_data
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -521,11 +522,11 @@ def config_parser():
                         help='frequency of console printout and metric loggin')
     parser.add_argument("--i_img",     type=int, default=500, 
                         help='frequency of tensorboard image logging')
-    parser.add_argument("--i_weights", type=int, default=10000, 
+    parser.add_argument("--i_weights", type=int, default=10000,
                         help='frequency of weight ckpt saving')
-    parser.add_argument("--i_testset", type=int, default=50000, 
+    parser.add_argument("--i_testset", type=int, default=2500,
                         help='frequency of testset saving')
-    parser.add_argument("--i_video",   type=int, default=50000, 
+    parser.add_argument("--i_video",   type=int, default=50000,
                         help='frequency of render_poses video saving')
 
     return parser
@@ -602,6 +603,19 @@ def train():
         hemi_R = np.mean(np.linalg.norm(poses[:,:3,-1], axis=-1))
         near = hemi_R-1.
         far = hemi_R+1.
+
+    elif args.dataset_type == 'human':
+        images, poses, render_poses, hwf, i_split = load_human_data(args.datadir, args.half_res, args.testskip)
+        print('Loaded human', images.shape, render_poses.shape, hwf, args.datadir)
+        i_train, i_val, i_test = i_split
+
+        near = 2.
+        far = 6.
+
+        if args.white_bkgd:
+            images = images[...,:3]*images[...,-1:] + (1.-images[...,-1:])
+        else:
+            images = images[...,:3]
 
     else:
         print('Unknown dataset type', args.dataset_type, 'exiting')
@@ -698,7 +712,7 @@ def train():
         rays_rgb = torch.Tensor(rays_rgb).to(device)
 
 
-    N_iters = 200000 + 1
+    N_iters = 400000 + 1
     print('Begin')
     print('TRAIN views are', i_train)
     print('TEST views are', i_test)
