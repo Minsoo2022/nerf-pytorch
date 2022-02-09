@@ -1,4 +1,4 @@
-expname = human_0001_0215_adjust
+expname = human_0001_addtrans
 basedir = ./logs
 datadir = /home/nas1_temp/dataset/Thuman/image_data_nolight/0001/color_re
 dataset_type = human

@@ -43,7 +43,7 @@ def load_human_data(basedir, half_res=False, testskip=1):
         fname_mask = fname.replace('color_re', 'mask_re').replace('jpg', 'png')
         mask = (imageio.imread(fname_mask)[None,] / 255.)[...,None]
         image = imageio.imread(fname)[None,]/ 255.
-        all_imgs.append(image * mask + (1 - mask))
+        all_imgs.append(np.concatenate((image,mask),axis=-1))
         pose = np.array(pose_spherical(i, 0, 10.0).cpu()[None,]) # pose = pose_spherical(i, 0, 10.0)
         all_poses.append(pose)
 
