@@ -1,11 +1,11 @@
-expname = human_0001_addtrans
+expname = human_0001_addtrans_noD
 basedir = ./logs
 datadir = /home/nas1_temp/dataset/Thuman/image_data_nolight/0001/color_re
 dataset_type = human
 
 no_batching = True
 
-use_viewdirs = True
+use_viewdirs = False
 white_bkgd = True
 lrate_decay = 500
 
